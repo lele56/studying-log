@@ -1,0 +1,4 @@
+# 环境变量文件（存放密钥）
+.env
+.env.local
+.env.*.local
