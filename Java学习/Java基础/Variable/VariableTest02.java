@@ -1,5 +1,6 @@
+package Variable;
 // 街头霸王
-public class Test02 {
+public class VariableTest02 {
     public static void main(String[] args) {
         /*
         我方：叉子             对方：长手

@@ -1,5 +1,6 @@
+package Variable;
 // 模拟钱包
-public class Test01 {
+public class VariableTest01 {
     public static void main(String[] args) {
         /* 微信余额：0元
         支付宝余额：10元
