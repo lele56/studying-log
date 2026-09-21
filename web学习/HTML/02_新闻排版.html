@@ -1,0 +1,43 @@
+<!-- 
+    新闻排版页面结构说明：
+    <!DOCTYPE>   - 文档声明，告诉浏览器"这是 HTML5 页面"
+    <meta>       - 元信息标签，给浏览器传递"设置类"指令
+    <a>          - 超链接标签，点击后跳转到其他网页
+    
+    ====== <a> 标签常用属性大全 ======
+    href       = "https://xxx.com"   跳转目标地址（网址/锚点/电话/邮箱）
+    target     = "_blank"            新标签页打开（_blank新窗口 / _self当前窗口）
+    title      = "提示文字"          鼠标悬停时显示的提示气泡
+    download   = "文件名.pdf"        点击后下载文件，而不是打开
+    
+    特殊用法：
+    href="#id名"          跳到本页面某个元素位置（锚点）
+    href="tel:10086"      手机端点击直接拨打电话
+    href="mailto:xx@x.com" 点击打开邮箱客户端
+-->
+<!DOCTYPE html>
+<!-- lang="en" 表示页面语言是英文（中文可改为 zh-CN） -->
+<html lang="en">
+<head>
+    <!-- charset="UTF-8" 确保中文字符不乱码，几乎是必写的 -->
+    <meta charset="UTF-8">
+    <!-- viewport 让页面在手机上也能正常缩放显示 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 浏览器标签页上显示的标题 -->
+    <title>【新闻】</title>
+</head>
+
+<!-- ========== 主体：新闻内容区 ========== -->
+<body>
+    <!-- 新闻标题，用 h1 突出显示 -->
+    <h1>【新闻】</h1>
+    
+    <!--
+        <a> 标签：href 必填，target="_blank" 建议加上（新标签页打开，不离开当前页）
+        多个属性空格隔开即可，如：<a href="网址" target="_blank" title="提示">文字</a>
+    -->
+    <a href="https://www.cctv.com" target="_blank" title="点击访问央视网">央视网</a>
+    <!-- 时间占位符，后续可替换为具体日期 -->
+    time
+</body>
+</html>
