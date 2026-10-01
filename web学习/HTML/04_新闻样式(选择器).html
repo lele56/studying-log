@@ -1,0 +1,59 @@
+<!-- 
+    CSS 选择器专题 — 三种最基础的选择器：
+    ① 元素选择器  span { }    直接用标签名，选中所有同名标签
+    ② 类选择器    .cls { }     用 . 开头，选中所有 class="cls" 的元素（可复用）
+    ③ ID 选择器   #time { }    用 # 开头，选中 id="time" 的唯一元素（不可重复）
+    
+    优先级（谁说了算）：ID > class > 元素选择器
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【新闻】选择器练习</title>
+
+    <!--
+        ====== CSS 选择器：选中谁，就改谁 ======
+        三种选择器写在同一个 <style> 里做对比
+        
+        class 和 id 的区别：
+        class  → 一群人共用一个班名（可重复）
+        id     → 每个人独一无二的身份证号（不可重复）
+    -->
+    <style>
+        /* ===== ① 元素选择器：直接用标签名，选中页面上所有同名标签 ===== */
+        span {
+            color: #b2b2b2;
+        }
+        /* 去掉 <a> 链接默认的下划线 */
+        a {
+            text-decoration: none;
+        }
+
+        /* ===== ② 类选择器：. 开头，选中所有 class="xxx" 的元素 ===== */
+        .cls {
+            color: red;
+        }
+
+        /* ===== ③ ID 选择器：# 开头，选中 id="xxx" 的元素（页面唯一） ===== */
+        #time {
+            color: #b2b2b2;
+        }
+    </style>
+</head>
+
+<!-- ========== 主体：新闻内容区 ========== -->
+<body>
+    <h1>【新闻】</h1>
+    
+    <a href="https://www.cctv.com" target="_blank" title="点击访问央视网">央视网</a>
+
+    <!-- 
+        一个标签可以同时有 class 和 id：
+        这个 span 身上有 .cls（红色）和 #time（灰色）
+        由于 ID 优先级 > class，最终显示灰色
+    -->
+    <span class="cls" id="time">2026-09-30</span>
+</body>
+</html>

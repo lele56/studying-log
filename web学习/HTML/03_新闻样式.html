@@ -1,0 +1,46 @@
+
+<!-- 
+    新闻样式页面结构说明：
+    <link>       - 引入外部资源（.css 文件、图标等），写在 <head> 里
+    <span>       - 行内容器，不换行，用于包裹一小段文字加样式
+    CSS 文件     - 独立的 .css 文件，HTML 通过 <link> 引入，多页共用
+    注意：三种 CSS 写法中，外部样式表是推荐做法！
+-->
+<!DOCTYPE html>
+<!-- lang="en" 表示页面语言是英文（中文可改为 zh-CN） -->
+<html lang="en">
+<head>
+    <!-- charset="UTF-8" 确保中文字符不乱码，几乎是必写的 -->
+    <meta charset="UTF-8">
+    <!-- viewport 让页面在手机上也能正常缩放显示 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 浏览器标签页上显示的标题 -->
+    <title>【新闻】</title>
+    <!--
+        ====== CSS 引入方式（外部样式表） ======
+        <link> 引入外部 .css 文件，是最推荐的写法：
+        - 一个 .css 文件可以被多个页面共用
+        - HTML 和 CSS 分离，维护更方便
+        
+        另外两种方式供对比：
+        ① 内联样式：<p style="color:red">  （不推荐，样式散落）
+        ② 内嵌样式：<style> 写在 <head> 里 （仅当前页可用）
+    -->
+    <link rel="stylesheet" href="news.css">
+</head>
+
+<!-- ========== 主体：新闻内容区 ========== -->
+<body>
+    <!-- 新闻标题，用 h1 突出显示 -->
+    <h1>【新闻】</h1>
+    
+    <!--
+        <a> 标签：href 必填，target="_blank" 建议加上（新标签页打开，不离开当前页）
+        多个属性空格隔开即可，如：<a href="网址" target="_blank" title="提示">文字</a>
+    -->
+    <a href="https://www.cctv.com" target="_blank" title="点击访问央视网">央视网</a>
+    <!-- 时间占位符，后续可替换为具体日期 -->
+    <!-- span：行内容器，本身无样式，配合 CSS 给文字单独"上色"，不会换行 -->
+    <span>2026-09-30</span>
+</body>
+</html>

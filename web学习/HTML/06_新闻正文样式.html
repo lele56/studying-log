@@ -1,0 +1,72 @@
+<!-- 
+    新闻正文样式 — 文本排版专题：
+    line-height  行高（行间距），1.5 表示当前字体大小的 1.5 倍
+    text-indent  首行缩进，2em 表示缩进 2 个汉字宽度
+    em           相对单位，1em = 当前字体大小（例：16px 字体下 2em=32px）
+    &nbsp;       HTML 实体，表示一个"不换行的空格"（non-breaking space）
+    
+    <strong> vs <b>：
+    <strong>  语义化加粗，表示"重要内容"，SEO 友好，推荐
+    <b>       纯视觉加粗，无语义含义，不推荐
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【新闻】</title>
+
+    <style>
+        /* ===== ① 元素选择器：直接用标签名，选中页面上所有同名标签 ===== */
+        span {
+            color: #b2b2b2;
+        }
+        /* 去掉 <a> 链接默认的下划线 */
+        a {
+            text-decoration: none;
+        }
+
+        /* ===== ② 类选择器：. 开头，选中所有 class="xxx" 的元素 ===== */
+        .cls {
+            color: red;
+        }
+
+        /* ===== ③ ID 选择器：# 开头，选中 id="xxx" 的元素（页面唯一） ===== */
+        #time {
+            color: #b2b2b2;
+        }
+
+        /* ===== ④ 段落排版：核心文本属性 ===== */
+        p {
+            /* 行高：1.5 倍字体大小，让段落看起来不拥挤 */
+            line-height: 1.5;
+            /* 首行缩进：2em = 2 个汉字宽度，模拟"空两格" */
+            text-indent: 2em;
+        }
+    </style>
+</head>
+
+<!-- ========== 主体：新闻内容区 ========== -->
+<body>
+    <h1>【新闻】</h1>
+    
+    <a href="https://www.cctv.com" target="_blank" title="点击访问央视网">央视网</a>
+
+    <span class="cls" id="time">2026-09-30</span>
+    <!-- <br>：标题和正文之间换一行，增加呼吸感 -->
+    <br>
+
+    <!-- 新闻正文段落 -->
+    <p>
+        <!--
+            <strong> vs <b>：两者都加粗，但 <strong> 有"强调"语义
+            搜索引擎和屏幕阅读器能识别 <strong>，<b> 只是视觉效果
+            同理：<em>（强调斜体）> <i>（纯斜体）
+        -->
+        <!-- <b>加粗</b>  ← 旧写法，不推荐 -->
+        <strong>加粗</strong>
+        新闻正文内容
+    </p>
+
+</body>
+</html>

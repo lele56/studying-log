@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斗破苍穹</title>
+
+    <!--
+    ==================== 本文件知识点 ====================
+    1. CSS 类选择器  .navbar  .navbar h1  .navbar a
+    2. Flexbox 弹性布局（重点！前端三大布局之一）
+    3. padding 内边距
+    4. font-family 字体
+    5. text-decoration 文字装饰（下划线）
+    6. href="#"  占位链接（开发时常用）
+    =====================================================
+    -->
+
+    <style>
+
+        /* ========== 1. 顶部导航栏容器 ========== */
+        .navbar{
+            background-color: #808080;      /* 背景色：灰色 */
+            padding: 10px;                   /* 内边距：内容周围留 10px 呼吸空间 */
+
+            /*
+            Flexbox 弹性布局三步走：
+            ① display: flex           → 让子元素（h1 和 a）排成一行
+            ② justify-content        → 控制水平方向怎么排列
+            ③ align-items            → 控制垂直方向怎么对齐
+            */
+            display: flex;                   /* ① 开启弹性布局，子元素从左到右排列 */
+            justify-content: space-between;  /* ② 水平两端对齐（左贴左，右贴右，中间留空）*/
+            align-items: center;             /* ③ 垂直居中对齐 */
+        }
+
+        /* ========== 2. 导航栏里的标题 ========== */
+        .navbar h1{
+            font-weight: bold;    /* 加粗 */
+            margin: 0;            /* 去掉 h1 标签自带的默认外边距（否则会撑开导航栏）*/
+            color: white;         /* 文字颜色：白色 */
+            font-family: "楷体";  /* 字体：楷体（也可以用 "微软雅黑"、"宋体" 等）*/
+        }
+
+        /* ========== 3. 导航栏里的链接 ========== */
+        .navbar a{
+            color: white;             /* 链接颜色：白色 */
+            text-decoration: none;    /* 去掉 a 标签默认的下划线 */
+        }
+
+    </style>
+</head>
+<body>
+
+    <!--
+    ========== 顶部导航栏 ==========
+    结构说明：
+      <div class="navbar">    ← 外层容器（灰色背景）
+        <h1>                  ← 左侧：标题
+        <a>                   ← 右侧：退出链接
+      </div>
+    Flexbox 自动让它们水平排列 + 两端对齐
+    -->
+    <div class="navbar">
+        <h1>斗破苍穹</h1>
+
+        <!--
+        href="#"  的含义：
+          # 是占位符，点击后跳到页面顶部
+          开发阶段先写 #，等有了真实链接再替换
+          另一种写法：href="javascript:;" → 点击完全无反应（更干净的占位）
+        -->
+        <a href="#">退出</a>
+    </div>
+
+</body>
+</html>
