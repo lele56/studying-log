@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>待办事项</title>
+    <style>
+        /* ==================== 全局样式 ==================== */
+        body {
+            margin: 0;                       /* 清除 body 默认的 8px 外边距 */
+            background-color: #f9fafb;       /* 背景色：浅灰 */
+            font-family: "Microsoft YaHei", "微软雅黑", sans-serif;
+            /* font-family：设置字体，多个值代表"备选"——
+               先用微软雅黑，没有就用系统无衬线字体 */
+        }
+
+        /* ==================== 1. 顶部导航栏 ==================== */
+        .navbar{
+            /* --- 盒模型 --- */
+            background-color: #1f2937;       /* 背景颜色：深灰黑 */
+            padding: 14px 24px;              /* 内边距：上下14px，左右24px */
+
+            /* --- 弹性布局 --- */
+            display: flex;                   /* 开启弹性布局：子元素排成一行 */
+            justify-content: space-between;  /* 水平排列：两端对齐，中间留空 */
+            align-items: center;             /* 垂直排列：居中 */
+        }
+
+        .navbar h1{
+            /* --- 文字样式 --- */
+            font-weight: bold;               /* 字体粗细：加粗 */
+            font-size: 20px;                 /* 字体大小：20像素 */
+            color: #fff;                     /* 文字颜色：白色 */
+            letter-spacing: 2px;             /* 字间距：每个字之间空2px */
+
+            /* --- 盒模型 --- */
+            margin: 0;                       /* 外边距：清除 h1 默认的上下间距 */
+        }
+
+        .navbar a{
+            /* --- 文字样式 --- */
+            color: #9ca3af;                  /* 文字颜色：灰色 */
+            text-decoration: none;           /* 去掉 a 标签默认的下划线 */
+            font-size: 14px;                 /* 字体大小：14像素 */
+
+            /* --- 过渡动画 --- */
+            transition: color 0.3s;          /* 颜色变化时，0.3秒平滑过渡 */
+        }
+
+        /* :hover 伪类 → 鼠标悬停时的样式 */
+        .navbar a:hover {
+            color: #fff;                     /* 悬停时文字变白 */
+        }
+
+        /* ==================== 2. 搜索表单卡片 ==================== */
+        .search-form{
+            /* --- 弹性布局 --- */
+            display: flex;                   /* 开启弹性布局 */
+            flex-wrap: nowrap;               /* 子元素不换行（即使超出也挤在一行） */
+            align-items: center;             /* 子元素垂直居中 */
+            gap: 10px;                       /* 子元素之间统一间隔10px，替代挨个写margin */
+
+            /* --- 盒模型（从外到内：margin → border → padding → content）--- */
+            margin: 24px auto;               /* 外边距：上下24px，左右auto（居中！）*/
+            padding: 20px 24px;              /* 内边距：上下20px，左右24px */
+            max-width: 780px;                /* 最大宽度：超过780px不再变宽 */
+            background-color: #fff;          /* 背景：白色 */
+            border: 1px solid #e5e7eb;       /* 边框：1px 实线 浅灰 */
+            border-radius: 8px;              /* 圆角：8px（值越大越圆） */
+
+            /* --- 阴影 --- */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            /* box-shadow: 水平偏移 垂直偏移 模糊度 颜色 */
+        }
+
+        /* ==================== 3. 输入框 & 下拉框 ==================== */
+        .search-form input[type="text"],
+        .search-form select {
+            /* --- 盒模型 --- */
+            padding: 7px 10px;               /* 内边距：上下7px，左右10px */
+            border: 1px solid #d1d5db;       /* 边框：1px 实线 灰色 */
+            border-radius: 4px;              /* 圆角：4px（比卡片小，有层次感） */
+            width: 150px;                    /* 宽度：固定150px */
+            background-color: #fff;          /* 背景：白色 */
+
+            /* --- 文字样式 --- */
+            font-size: 14px;                 /* 字体大小 */
+
+            /* --- 交互 --- */
+            outline: none;                   /* 去掉浏览器默认的蓝色聚焦框 */
+            transition: border-color 0.3s;   /* 边框颜色变化过渡0.3秒 */
+        }
+
+        /* :focus 伪类 → 输入框获得焦点（点击后）时的样式 */
+        .search-form input[type="text"]:focus,
+        .search-form select:focus {
+            border-color: #3b82f6;           /* 聚焦后边框变蓝色 */
+
+            box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
+            /* 外发光：无偏移 + 无模糊 + 2px扩展 + 半透明蓝色 */
+        }
+
+        /* ==================== 4. 按钮 ==================== */
+        /* 按钮通用样式（两个按钮都会继承） */
+        .search-form button {
+            /* --- 盒模型 --- */
+            padding: 7px 20px;               /* 内边距：上下7px，左右20px（按钮要宽一点） */
+            border: none;                    /* 去掉浏览器默认的边框 */
+            border-radius: 4px;              /* 圆角 */
+
+            /* --- 文字样式 --- */
+            font-size: 14px;
+
+            /* --- 交互 --- */
+            cursor: pointer;                 /* 鼠标悬停时变"小手" */
+            transition: 0.3s;                /* 所有属性变化都过渡0.3秒 */
+        }
+
+        /* 筛选按钮（主按钮）*/
+        /* button[type="submit"] → 属性选择器：只选 type="submit" 的按钮 */
+        .search-form button[type="submit"] {
+            background-color: #3b82f6;       /* 背景色：蓝色 */
+            color: #fff;                     /* 文字色：白色 */
+        }
+
+        .search-form button[type="submit"]:hover {
+            background-color: #2563eb;       /* 悬停时背景色加深 */
+        }
+
+        /* 重置按钮（次按钮）*/
+        .search-form button[type="reset"] {
+            background-color: #fff;          /* 背景：白色 */
+            color: #374151;                  /* 文字：深灰 */
+            border: 1px solid #d1d5db;       /* 边框：灰色细线 */
+        }
+
+        .search-form button[type="reset"]:hover {
+            background-color: #f3f4f6;       /* 悬停时背景变浅灰 */
+        }
+
+        /* ==================== 5. 标签文字 ==================== */
+        .search-form label {
+            /* --- 文字样式 --- */
+            font-size: 14px;                 /* 字体大小 */
+            color: #374151;                  /* 文字颜色：深灰 */
+            font-weight: 500;                /* 字重：500（400=正常，700=加粗） */
+
+            /* --- 防换行 --- */
+            white-space: nowrap;             /* 强制不换行，防止"优先级："被拆成两行 */
+        }
+
+        /* ==================== 6. 数据表格 ==================== */
+        /* 表格外层卡片（和表单卡片统一风格） */
+        .table-card {
+            max-width: 780px;                /* 和表单一样宽 */
+            margin: 0 auto 40px;             /* 居中 + 底部留空 */
+            background-color: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            overflow: hidden;                /* 圆角裁掉表格超出部分 */
+        }
+
+        .data-table {
+            width: 100%;                     /* 表格撑满卡片 */
+            border-collapse: collapse;       /* ★ 合并单元格边框（去掉双线） */
+            font-size: 14px;
+        }
+
+        /* 表头样式 */
+        .data-table thead {
+            background-color: #f3f4f6;       /* 表头浅灰底 */
+        }
+
+        .data-table th {
+            padding: 12px 16px;              /* 表头内边距 */
+            text-align: left;                /* 文字左对齐（默认居中） */
+            font-weight: 600;                /* 加粗 */
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;/* 表头底部粗线 */
+        }
+
+        /* 数据行样式 */
+        .data-table td {
+            padding: 12px 16px;              /* 单元格内边距 */
+            color: #4b5563;
+            border-bottom: 1px solid #f3f4f6;/* 行与行之间的细线 */
+        }
+
+        /* ★ :nth-child 伪类 —— 隔行变色（斑马条纹） */
+        .data-table tbody tr:nth-child(even) {
+            background-color: #f9fafb;       /* 偶数行浅灰底 */
+        }
+
+        /* 鼠标悬停行高亮 */
+        .data-table tbody tr:hover {
+            background-color: #eff6ff;       /* 悬停淡蓝底 */
+        }
+
+        /* ==================== 7. 底部展示区 ==================== */
+        /*
+        ★ <footer> 语义化标签：表示页面或区域的底部
+          浏览器不会自动把它放到页面最下面——
+          如果内容不够长，需要额外 CSS 让它"粘"在底部
+        */
+        .footer {
+            background-color: #1f2937;       /* 和导航栏同色，首尾呼应 */
+            color: #9ca3af;                  /* 灰色文字 */
+            text-align: center;              /* ★ 文字居中 */
+            padding: 24px 0;                 /* 上下24px，左右0 */
+            margin-top: 40px;                /* 和上面内容拉开距离 */
+            font-size: 13px;
+        }
+
+        .footer a {
+            color: #9ca3af;                  /* 链接灰色 */
+            text-decoration: none;           /* 去下划线 */
+            margin: 0 8px;                   /* 链接之间左右各8px间距 */
+            transition: color 0.3s;
+        }
+
+        .footer a:hover {
+            color: #fff;                     /* 悬停变白 */
+        }
+
+        .footer .copyright {
+            margin-top: 8px;                 /* 版权文字和链接之间的间距 */
+            color: #6b7280;                  /* 比链接更淡的灰色 */
+        }
+
+    </style>
+</head>
+<body>
+
+    <!--
+    ========== 顶部导航栏 ==========
+    深色简洁风格
+    -->
+    <div class="navbar">
+        <h1>📋 我的待办</h1>
+        <a href="#">退出登录</a>
+    </div>
+
+    <form class="search-form" action="/search" method="get">
+
+        <label for="keyword">关键词：</label>
+        <input type="text" id="keyword" name="keyword" placeholder="搜索待办事项">
+
+        <label for="priority">优先级：</label>
+        <select id="priority" name="priority">
+            <option value="">不限</option>
+            <option value="high">🔴 高</option>
+            <option value="medium">🟡 中</option>
+            <option value="low">🟢 低</option>
+        </select>
+
+        <label for="status">状态：</label>
+        <select id="status" name="status">
+            <option value="">不限</option>
+            <option value="todo">📝 未开始</option>
+            <option value="doing">⏳ 进行中</option>
+            <option value="done">✅ 已完成</option>
+        </select>
+
+        <button type="submit">筛选</button>
+        <button type="reset">重置</button>
+
+    </form>
+
+    <form class="search-form" action="/add" method="post">
+
+        <label for="title">待办内容：</label>
+        <input type="text" id="title" name="title" placeholder="输入新的待办事项">
+
+        <button type="submit">添加</button>
+
+    </form>
+    <div class="table-card">
+        <table class="data-table">
+
+            <!-- thead：表头 -->
+            <thead>
+                <tr>
+                    <th style="width: 50px;">序号</th>
+                    <th>待办事项</th>
+                    <th style="width: 80px;">优先级</th>
+                    <th style="width: 80px;">状态</th>
+                    <th style="width: 100px;">截止日期</th>
+                </tr>
+            </thead>
+
+            <!-- tbody：数据行 -->
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>完成 HTML 基础学习笔记</td>
+                    <td>🔴 高</td>
+                    <td>⏳ 进行中</td>
+                    <td>2026-09-21</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>复习 CSS 盒模型与弹性布局</td>
+                    <td>🔴 高</td>
+                    <td>📝 未开始</td>
+                    <td>2026-09-22</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>练习 form 表单提交</td>
+                    <td>🟡 中</td>
+                    <td>📝 未开始</td>
+                    <td>2026-09-23</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>学习 JavaScript 基础语法</td>
+                    <td>🟡 中</td>
+                    <td>📝 未开始</td>
+                    <td>2026-09-25</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>搭建个人博客首页</td>
+                    <td>🟢 低</td>
+                    <td>📝 未开始</td>
+                    <td>2026-09-30</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>每天背 20 个英语单词</td>
+                    <td>🟢 低</td>
+                    <td>✅ 已完成</td>
+                    <td>2026-09-20</td>
+                </tr>
+            </tbody>
+
+        </table>
+    </div>
+
+    <!--
+    ========== 底部展示区 ==========
+    ★ <footer> 语义化标签：页面底部
+    可以和 <div class="footer"> 互换，功能一样
+    但 <footer> 对搜索引擎和读屏软件更友好
+
+    常见底部放什么：
+      - 版权信息  © 2026 xxx
+      - 友情链接  关于我们 / 帮助中心 / 隐私政策
+      - 备案号    京ICP备xxxx号
+      - 联系方式  email / 电话
+    -->
+    <footer class="footer">
+
+        <!-- 链接行 -->
+        <div>
+            <a href="#">关于我们</a>
+            <a href="#">帮助中心</a>
+            <a href="#">隐私政策</a>
+            <a href="#">服务条款</a>
+        </div>
+
+        <!-- 版权行 -->
+        <div class="copyright">
+            © 2026 我的待办 · 保留所有权利
+        </div>
+
+    </footer>
+
+</body>
+</html>

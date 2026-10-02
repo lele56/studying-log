@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript 入门 · 基础语法</title>
+
+    <!--
+    ★ JavaScript（JS）：让网页"动"起来的语言
+
+    JS 能做什么？
+      - 弹窗提示（alert）
+      - 操作 HTML 内容（改文字、加/删元素）
+      - 响应用户操作（点击、输入、滚动）
+      - 发网络请求（从服务器拿数据）
+      - 做计算、验证表单、跑动画……
+
+    本节课重点：
+      ✓ JS 是什么、怎么写
+      ✓ 三种输出方式（alert / console.log / document.write）
+      ✓ JS 注释语法（// 和斜杠星号）e
+
+    下节课：
+      02 → 变量与数据类型
+      03 → 条件判断与循环
+    -->
+
+    <!--
+    ★ JS 引入方式一：写在 <script> 标签里（内嵌）
+      可以放在 <head> 或 <body> 中，但位置不同，执行时机不同！
+
+      放在 <head> 里 → 页面还没加载完就执行 JS
+        → 如果 JS 要操作 HTML 元素会报错（元素还没出生）
+        → 加 defer 属性解决：<script defer> 等 HTML 加载完再执行
+
+      放在 </body> 关闭标签前 → HTML 已全部加载，JS 安全执行
+        → 这是经典写法，不用加任何特殊属性
+    -->
+</head>
+<body>
+
+    <!-- ==================== JS 基础语法 ==================== -->
+
+    <script>
+        /*
+        ★ JS 注释用两个斜杠（单行）或斜杠星号组合（多行），和 CSS 一样，不要用 HTML 的注释符号
+
+        控制台输出（Console）= 开发者的"秘密频道"
+        打开方式：浏览器按 F12 → 选 Console 标签
+
+        三种"说话方式"：
+          方法              |  效果
+          alert()           |  弹窗，用户必须点"确定"才能继续
+          console.log()     |  输出到控制台（F12），用户看不到
+          document.write()  |  直接写到网页上（会覆盖原有内容！）
+        */
+
+        alert('Hello World! —— 这是弹窗');
+
+        // console.log：开发者调试专用，按 F12 才能看到
+        console.log('这是控制台输出 —— 只有开发者能看到');
+        console.log(1 + 2);                     // 3
+        console.log(typeof 'hello');            // string （typeof：查看类型）
+
+
+    </script>
+
+    <!--
+    ★ JS 引入方式二：外部文件（推荐！日常开发标准方式）
+      和 CSS 的 <link> 一样，JS 也应该尽量独立出去
+
+      写法：<script src="路径.js"></script>
+
+      优点：
+        - HTML 和 JS 分离，结构清晰
+        - 多个页面共用同一个 JS 文件
+        - 浏览器可以缓存，加载更快
+
+      ★ 注意：<script src="..."> 标签里面不能再写代码，
+        需要内嵌代码时，另起一个 <script> 标签。
+    -->
+
+</body>
+</html>

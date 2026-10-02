@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>待办事项</title>
+
+    <!--
+    ==================== 本文件知识点 ====================
+    1. <form> 表单标签及 action / method 属性
+    2. <input>  输入框（type="text", placeholder 占位提示）
+    3. <select> 下拉框（<option> 选项）
+    4. <button> 按钮（type="submit" 提交 / type="reset" 重置）
+    5. <label>  标签（配合 for 属性提升可访问性）
+    6. CSS 属性选择器  input[type="text"]
+    7. CSS 新属性：flex-wrap / gap / border / border-radius
+    8. CSS 伪类：:hover 鼠标悬停效果
+    =====================================================
+    -->
+
+    <style>
+
+        /*
+        ==================== CSS 速查小抄 ====================
+        CSS 规则结构： 选择器 { 属性: 值; 属性: 值; }
+                        ↑       ↑    ↑
+                      .navbar  color red;
+        值的单位：
+          px   → 像素（绝对大小）   如 14px
+          %    → 百分比（相对父元素）如 width: 50%
+          auto → 自动计算
+          s    → 秒（动画时长）     如 0.3s
+        =====================================================
+        */
+
+        /* ==================== 全局样式 ==================== */
+        body {
+            margin: 0;                       /* 清除 body 默认的 8px 外边距 */
+            background-color: #f9fafb;       /* 背景色：浅灰 */
+            font-family: "Microsoft YaHei", "微软雅黑", sans-serif;
+            /* font-family：设置字体，多个值代表"备选"——
+               先用微软雅黑，没有就用系统无衬线字体 */
+        }
+
+        /* ==================== 1. 顶部导航栏 ==================== */
+        .navbar{
+            /* --- 盒模型 --- */
+            background-color: #1f2937;       /* 背景颜色：深灰黑 */
+            padding: 14px 24px;              /* 内边距：上下14px，左右24px */
+
+            /* --- 弹性布局 --- */
+            display: flex;                   /* 开启弹性布局：子元素排成一行 */
+            justify-content: space-between;  /* 水平排列：两端对齐，中间留空 */
+            align-items: center;             /* 垂直排列：居中 */
+        }
+
+        .navbar h1{
+            /* --- 文字样式 --- */
+            font-weight: bold;               /* 字体粗细：加粗 */
+            font-size: 20px;                 /* 字体大小：20像素 */
+            color: #fff;                     /* 文字颜色：白色 */
+            letter-spacing: 2px;             /* 字间距：每个字之间空2px */
+
+            /* --- 盒模型 --- */
+            margin: 0;                       /* 外边距：清除 h1 默认的上下间距 */
+        }
+
+        .navbar a{
+            /* --- 文字样式 --- */
+            color: #9ca3af;                  /* 文字颜色：灰色 */
+            text-decoration: none;           /* 去掉 a 标签默认的下划线 */
+            font-size: 14px;                 /* 字体大小：14像素 */
+
+            /* --- 过渡动画 --- */
+            transition: color 0.3s;          /* 颜色变化时，0.3秒平滑过渡 */
+        }
+
+        /* :hover 伪类 → 鼠标悬停时的样式 */
+        .navbar a:hover {
+            color: #fff;                     /* 悬停时文字变白 */
+        }
+
+        /* ==================== 2. 搜索表单卡片 ==================== */
+        .search-form{
+            /* --- 弹性布局 --- */
+            display: flex;                   /* 开启弹性布局 */
+            flex-wrap: nowrap;               /* 子元素不换行（即使超出也挤在一行） */
+            align-items: center;             /* 子元素垂直居中 */
+            gap: 10px;                       /* 子元素之间统一间隔10px，替代挨个写margin */
+
+            /* --- 盒模型（从外到内：margin → border → padding → content）--- */
+            margin: 24px auto;               /* 外边距：上下24px，左右auto（居中！）*/
+            padding: 20px 24px;              /* 内边距：上下20px，左右24px */
+            max-width: 780px;                /* 最大宽度：超过780px不再变宽 */
+            background-color: #fff;          /* 背景：白色 */
+            border: 1px solid #e5e7eb;       /* 边框：1px 实线 浅灰 */
+            border-radius: 8px;              /* 圆角：8px（值越大越圆） */
+
+            /* --- 阴影 --- */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            /* box-shadow: 水平偏移 垂直偏移 模糊度 颜色 */
+        }
+
+        /* ==================== 3. 输入框 & 下拉框 ==================== */
+        /*
+        ★ 属性选择器：
+          input[type="text"]  只选择 type 属性等于 "text" 的 input
+          不会选中 type="radio" / type="checkbox" 等其他 input
+        */
+        .search-form input[type="text"],
+        .search-form select {
+            /* --- 盒模型 --- */
+            padding: 7px 10px;               /* 内边距：上下7px，左右10px */
+            border: 1px solid #d1d5db;       /* 边框：1px 实线 灰色 */
+            border-radius: 4px;              /* 圆角：4px（比卡片小，有层次感） */
+            width: 150px;                    /* 宽度：固定150px */
+            background-color: #fff;          /* 背景：白色 */
+
+            /* --- 文字样式 --- */
+            font-size: 14px;                 /* 字体大小 */
+
+            /* --- 交互 --- */
+            outline: none;                   /* 去掉浏览器默认的蓝色聚焦框 */
+            transition: border-color 0.3s;   /* 边框颜色变化过渡0.3秒 */
+        }
+
+        /* :focus 伪类 → 输入框获得焦点（点击后）时的样式 */
+        .search-form input[type="text"]:focus,
+        .search-form select:focus {
+            border-color: #3b82f6;           /* 聚焦后边框变蓝色 */
+
+            box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
+            /* 外发光：无偏移 + 无模糊 + 2px扩展 + 半透明蓝色 */
+        }
+
+        /* ==================== 4. 按钮 ==================== */
+        /* 按钮通用样式（两个按钮都会继承） */
+        .search-form button {
+            /* --- 盒模型 --- */
+            padding: 7px 20px;               /* 内边距：上下7px，左右20px（按钮要宽一点） */
+            border: none;                    /* 去掉浏览器默认的边框 */
+            border-radius: 4px;              /* 圆角 */
+
+            /* --- 文字样式 --- */
+            font-size: 14px;
+
+            /* --- 交互 --- */
+            cursor: pointer;                 /* 鼠标悬停时变"小手" */
+            transition: 0.3s;                /* 所有属性变化都过渡0.3秒 */
+        }
+
+        /* 筛选按钮（主按钮）*/
+        /* button[type="submit"] → 属性选择器：只选 type="submit" 的按钮 */
+        .search-form button[type="submit"] {
+            background-color: #3b82f6;       /* 背景色：蓝色 */
+            color: #fff;                     /* 文字色：白色 */
+        }
+
+        .search-form button[type="submit"]:hover {
+            background-color: #2563eb;       /* 悬停时背景色加深 */
+        }
+
+        /* 重置按钮（次按钮）*/
+        .search-form button[type="reset"] {
+            background-color: #fff;          /* 背景：白色 */
+            color: #374151;                  /* 文字：深灰 */
+            border: 1px solid #d1d5db;       /* 边框：灰色细线 */
+        }
+
+        .search-form button[type="reset"]:hover {
+            background-color: #f3f4f6;       /* 悬停时背景变浅灰 */
+        }
+
+        /* ==================== 5. 标签文字 ==================== */
+        .search-form label {
+            /* --- 文字样式 --- */
+            font-size: 14px;                 /* 字体大小 */
+            color: #374151;                  /* 文字颜色：深灰 */
+            font-weight: 500;                /* 字重：500（400=正常，700=加粗） */
+
+            /* --- 防换行 --- */
+            white-space: nowrap;             /* 强制不换行，防止"优先级："被拆成两行 */
+        }
+
+    </style>
+</head>
+<body>
+
+    <!--
+    ========== 顶部导航栏 ==========
+    深色简洁风格
+    -->
+    <div class="navbar">
+        <h1>📋 我的待办</h1>
+        <a href="#">退出登录</a>
+    </div>
+
+    <!--
+    ========== 待办事项筛选表单 ==========
+    <form> 两个关键属性：
+      action = "/search"  → 提交到哪个地址（后端接口）
+      method = "get"      → get 方式，筛选条件适合显示在 URL 里
+
+    表单项说明：
+      <input  type="text">  → 文本框，placeholder 是灰色提示文字
+      <select>              → 下拉选择框，每个 <option> 是一个选项
+      <button type="submit"> → 提交按钮，点击后把表单数据发给 action 地址
+      <button type="reset">  → 重置按钮，清空所有输入恢复默认
+    -->
+    <form class="search-form" action="/search" method="get">
+
+        <label for="keyword">关键词：</label>
+        <input type="text" id="keyword" name="keyword" placeholder="搜索待办事项">
+
+        <label for="priority">优先级：</label>
+        <select id="priority" name="priority">
+            <option value="">不限</option>
+            <option value="high">🔴 高</option>
+            <option value="medium">🟡 中</option>
+            <option value="low">🟢 低</option>
+        </select>
+
+        <label for="status">状态：</label>
+        <select id="status" name="status">
+            <option value="">不限</option>
+            <option value="todo">📝 未开始</option>
+            <option value="doing">⏳ 进行中</option>
+            <option value="done">✅ 已完成</option>
+        </select>
+
+        <button type="submit">筛选</button>
+        <button type="reset">重置</button>
+
+    </form>
+
+    <!--
+    ========== 添加待办表单（method="post"）==========
+    ★ GET  vs  POST ★
+      方法     数据在哪         URL 示例                       适用场景
+      GET   → 拼在网址后面     /add?title=买菜                搜索、筛选（可收藏/分享链接）
+      POST  → 藏在请求体里     /add  （URL 上看不到数据）      新增、登录（安全，数据不暴露）
+
+    简单记：
+      想看数据 → GET（搜索）
+      想藏数据 → POST（提交/新增/登录）
+    -->
+    <form class="search-form" action="/add" method="post">
+
+        <label for="title">待办内容：</label>
+        <input type="text" id="title" name="title" placeholder="输入新的待办事项">
+
+        <button type="submit">添加</button>
+
+    </form>
+
+</body>
+</html>

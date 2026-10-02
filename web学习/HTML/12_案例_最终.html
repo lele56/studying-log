@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>待办事项</title>
+    <style>
+        /* ========== 设计系统：颜色变量（方便统一修改）========== */
+        :root {
+            --bg:       #f9fafb;
+            --white:    #fff;
+            --black:    #1f2937;
+            --gray-50:  #f3f4f6;
+            --gray-100: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --blue:     #3b82f6;
+            --blue-h:   #2563eb;
+            --blue-bg:  #eff6ff;
+            --radius:   8px;
+            --shadow:   0 1px 3px rgba(0,0,0,.06);
+        }
+
+        /* ========== 全局 ========== */
+        body {
+            margin: 0;
+            background: var(--bg);
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        /* ========== 导航栏 ========== */
+        .navbar {
+            background: var(--black);
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar h1 { color: var(--white); font-size: 20px; margin: 0; letter-spacing: 2px; }
+        .navbar a  { color: var(--gray-400); font-size: 14px; text-decoration: none; transition: color .3s; }
+        .navbar a:hover { color: var(--white); }
+
+        /* ========== 卡片容器（表单 + 表格共用）========== */
+        .card {
+            max-width: 780px;
+            margin: 24px auto;
+            padding: 20px 24px;
+            background: var(--white);
+            border: 1px solid var(--gray-100);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        /* ========== 表单 ========== */
+        .form-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .form-row label { font-size: 14px; color: var(--gray-700); font-weight: 500; white-space: nowrap; }
+
+        /* 输入框 & 下拉框 */
+        .form-row input[type="text"],
+        .form-row select {
+            padding: 7px 10px;
+            border: 1px solid var(--gray-300);
+            border-radius: 4px;
+            width: 150px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color .3s, box-shadow .3s;
+        }
+        .form-row input[type="text"]:focus,
+        .form-row select:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 2px rgba(59,130,246,.15);
+        }
+
+        /* 按钮 */
+        .form-row button {
+            padding: 7px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: .3s;
+        }
+        .btn-primary { background: var(--blue); color: var(--white); }
+        .btn-primary:hover { background: var(--blue-h); }
+        .btn-reset   { background: var(--white); color: var(--gray-700); border: 1px solid var(--gray-300); }
+        .btn-reset:hover { background: var(--gray-50); }
+
+        /* ========== 表格 ========== */
+        .table-card { overflow: hidden; }                    /* 圆角裁边 */
+        .table-card table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .table-card thead { background: var(--gray-50); }
+        .table-card th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--gray-700);
+            border-bottom: 2px solid var(--gray-100);
+        }
+        .table-card td {
+            padding: 12px 16px;
+            color: var(--gray-600);
+            border-bottom: 1px solid var(--gray-50);
+        }
+        .table-card tbody tr:nth-child(even) { background: var(--bg); }
+        .table-card tbody tr:hover         { background: var(--blue-bg); }
+
+        /* ========== 底部 ========== */
+        .footer {
+            background: var(--black);
+            text-align: center;
+            padding: 24px 0;
+            margin-top: 40px;
+            font-size: 13px;
+            color: var(--gray-400);
+        }
+        .footer a { color: var(--gray-400); text-decoration: none; margin: 0 8px; transition: color .3s; }
+        .footer a:hover { color: var(--white); }
+        .footer .copyright { margin-top: 8px; color: var(--gray-500); }
+    </style>
+</head>
+<body>
+
+    <!-- 导航栏 -->
+    <div class="navbar">
+        <h1>📋 我的待办</h1>
+        <a href="#">退出登录</a>
+    </div>
+
+    <!-- 筛选表单 (GET) -->
+    <form class="card" action="/search" method="get">
+        <div class="form-row">
+            <label for="keyword">关键词：</label>
+            <input type="text" id="keyword" name="keyword" placeholder="搜索待办事项">
+
+            <label for="priority">优先级：</label>
+            <select id="priority" name="priority">
+                <option value="">不限</option>
+                <option value="high">🔴 高</option>
+                <option value="medium">🟡 中</option>
+                <option value="low">🟢 低</option>
+            </select>
+
+            <label for="status">状态：</label>
+            <select id="status" name="status">
+                <option value="">不限</option>
+                <option value="todo">📝 未开始</option>
+                <option value="doing">⏳ 进行中</option>
+                <option value="done">✅ 已完成</option>
+            </select>
+
+            <button type="submit" class="btn-primary">筛选</button>
+            <button type="reset" class="btn-reset">重置</button>
+        </div>
+    </form>
+
+    <!-- 添加表单 (POST) -->
+    <form class="card" action="/add" method="post">
+        <div class="form-row">
+            <label for="title">待办内容：</label>
+            <input type="text" id="title" name="title" placeholder="输入新的待办事项">
+            <button type="submit" class="btn-primary">添加</button>
+        </div>
+    </form>
+
+    <!-- 数据表格 -->
+    <div class="card table-card">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:50px">序号</th>
+                    <th>待办事项</th>
+                    <th style="width:80px">优先级</th>
+                    <th style="width:80px">状态</th>
+                    <th style="width:100px">截止日期</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>完成 HTML 基础学习笔记</td>
+                    <td>🔴 高</td>
+                    <td>⏳ 进行中</td>
+                    <td>2026-09-21</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>复习 CSS 盒模型与弹性布局</td>
+                    <td>🔴 高</td>
+                    <td>📝 未开始</td>
+                    <td>2026-09-22</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>练习 form 表单提交</td>
+                    <td>🟡 中</td>
+                    <td>📝 未开始</td>
+                    <td>2026-09-23</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>学习 JavaScript 基础语法</td>
+                    <td>🟡 中</td>
+                    <td>📝 未开始</td>
+                    <td>2026-09-25</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>搭建个人博客首页</td>
+                    <td>🟢 低</td>
+                    <td>📝 未开始</td>
+                    <td>2026-09-30</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>每天背 20 个英语单词</td>
+                    <td>🟢 低</td>
+                    <td>✅ 已完成</td>
+                    <td>2026-09-20</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 底部 -->
+    <footer class="footer">
+        <div>
+            <a href="#">关于我们</a>
+            <a href="#">帮助中心</a>
+            <a href="#">隐私政策</a>
+            <a href="#">服务条款</a>
+        </div>
+        <div class="copyright">© 2026 我的待办 · 保留所有权利</div>
+    </footer>
+
+</body>
+</html>

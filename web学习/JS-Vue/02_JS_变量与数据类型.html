@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS 变量与数据类型</title>
+
+    <!--
+    本节课聚焦：
+      1. 变量声明 let / const / var 的区别
+      2. 7 种数据类型
+      3. typeof 查看类型
+      4. 类型转换
+      5. 命名规范
+    -->
+</head>
+<body>
+
+    <h1>JS 变量与数据类型 —— 按 F12 查看控制台</h1>
+
+    <script>
+        // ==================== 一、变量声明 ====================
+        console.log('========== 一、变量声明 ==========');
+
+        /*
+        ★ 三种声明方式对比：
+
+        let   声明变量（可以改值）  —— 日常最常用
+        const 声明常量（不能改值）  —— 优先使用！
+        var   老式声明（有作用域坑） —— 别用！
+        */
+
+        // let：值可以改
+        let userName = '萧炎';
+        console.log('初始值：', userName);       // 萧炎
+
+        userName = '药老';                       // 重新赋值
+        console.log('修改后：', userName);        // 药老
+
+        // const：值不能改
+        const BIRTH_YEAR = 2000;
+        console.log('出生年份：', BIRTH_YEAR);
+        // BIRTH_YEAR = 2001;                    // ❌ 报错！TypeError
+
+        // var 的问题：会"变量提升"，容易造成 bug
+        console.log('var 之前就能访问：', testVar);// undefined（不会报错，坑！）
+        var testVar = '我是 var';
+        // 换成 let 上面那行就会直接报错，帮你提前发现 bug
+
+
+        // ==================== 二、命名规则 ====================
+        console.log('========== 二、命名规则 ==========');
+
+        /*
+        可以：字母、数字、下划线、美元符号
+        不可以：数字开头
+        区分大小写：name 和 Name 是两个不同的变量
+
+        推荐风格：
+          小驼峰 → userName  todoList  studentCount   （JS 标准）
+          大驼峰 → UserName  TodoList                  （类名用）
+          蛇形   → user_name                            （少用）
+          全大写 → MAX_SIZE  API_KEY                    （常量专用）
+        */
+
+        // ✅ 合法
+        let name1 = 'OK';
+        let _private = 'OK';
+        let $dollar = 'OK';
+        let userName2 = 'OK';
+
+        // ❌ 非法（已注释，不然会报错）
+        // let 1name = '×';       // 数字开头不行
+        // let user-name = '×';   // 连字符不行
+
+
+        // ==================== 三、7 种数据类型 ====================
+        console.log('========== 三、7 种数据类型 ==========');
+
+        // ① string —— 字符串：用引号包起来
+        let str1 = '单引号';
+        let str2 = "双引号也一样";
+        let str3 = `反引号可以换行
+        和嵌入变量`;
+        console.log('字符串：', str1, str2);
+        console.log('类型：', typeof str1);          // string
+
+        // ② number —— 数字：整数、小数、负数都算
+        let intNum = 42;
+        let floatNum = 3.14;
+        let negNum = -10;
+        let bigNum = 1e6;                            // 科学计数法 = 1000000
+        console.log('数字：', intNum, floatNum, negNum, bigNum);
+        console.log('类型：', typeof 3.14);           // number
+
+        // ③ boolean —— 布尔值：只有 true 和 false
+        let isDone = true;
+        let isError = false;
+        console.log('布尔：', isDone, isError);
+        console.log('类型：', typeof true);            // boolean
+
+        // ④ null —— 空值（故意设为空）
+        let empty = null;
+        console.log('null 值：', empty);
+        console.log('null 类型：', typeof null);      // ★ object（历史遗留 bug！）
+
+        // ⑤ undefined —— 未定义（声明了但没赋值）
+        let notAssigned;
+        console.log('undefined 值：', notAssigned);   // undefined
+        console.log('undefined 类型：', typeof notAssigned);
+
+        // ⑥ symbol —— 唯一标识（ES6 新增，较少使用）
+        let sym1 = Symbol('id');
+        let sym2 = Symbol('id');
+        console.log('两个相同描述的 Symbol 相等吗？', sym1 === sym2); // false！独一无二
+
+        // ⑦ object —— 对象：复杂数据结构
+        let person = { name: '萧炎', age: 17, job: '炼药师' };
+        let arr = [1, 2, 3];                         // 数组也是对象
+        console.log('对象：', person);
+        console.log('数组：', arr);
+        console.log('对象类型：', typeof person);     // object
+        console.log('数组类型：', typeof arr);        // object（数组也是 object！）
+
+
+        // ==================== 四、类型转换 ====================
+        console.log('========== 四、类型转换 ==========');
+
+        /*
+        ★ 隐式转换（自动发生，容易踩坑）
+          显式转换（手动调用函数，推荐）
+
+          String()  → 转字符串
+          Number()  → 转数字
+          Boolean() → 转布尔值
+        */
+
+        // 数字 → 字符串
+        let num = 123;
+        console.log(String(num));                    // "123"
+        console.log(num + '');                       // "123"（隐式：数字 + 空字符串 = 字符串）
+
+        // 字符串 → 数字
+        let strNum = '456';
+        console.log(Number(strNum));                 // 456
+        console.log(+strNum);                        // 456（隐式：前面加 + 号）
+
+        // 转数字失败 → NaN（Not a Number）
+        console.log(Number('abc'));                  // NaN
+        console.log(typeof NaN);                     // number（NaN 的类型居然是 number！）
+
+        // 转布尔值 —— 只有这 6 个值转 false，其他都是 true
+        console.log('false 值：');
+        console.log(Boolean(''));                    // false  空字符串
+        console.log(Boolean(0));                     // false  数字 0
+        console.log(Boolean(-0));                    // false
+        console.log(Boolean(null));                  // false
+        console.log(Boolean(undefined));             // false
+        console.log(Boolean(NaN));                   // false
+
+        console.log('其他都是 true：');
+        console.log(Boolean('hello'));               // true
+        console.log(Boolean(1));                     // true
+        console.log(Boolean([]));                    // true（空数组也是 true！）
+        console.log(Boolean({}));                    // true（空对象也是 true！）
+
+
+        // ==================== 五、实战小练习 ====================
+        console.log('========== 五、检测数组的正确方法 ==========');
+
+        let arr2 = [1, 2, 3];
+        console.log('typeof 数组：', typeof arr2);            // object（不靠谱！）
+        console.log('Array.isArray：', Array.isArray(arr2));  // true（靠谱！）
+
+        console.log('typeof null：', typeof null);            // object（历史 bug）
+        console.log('正确判 null：', null === null);           // true
+
+        console.log('NaN === NaN：', NaN === NaN);            // false（NaN 不等于自己！）
+        console.log('正确判 NaN：', Number.isNaN(NaN));       // true
+
+    </script>
+
+</body>
+</html>

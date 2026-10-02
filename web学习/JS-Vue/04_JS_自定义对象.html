@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS 对象与 JSON</title>
+</head>
+<body>
+
+    <h1>JS 对象与 JSON —— 按 F12 查看控制台</h1>
+
+    <script>
+        // ==================== 一、JS 对象基础 ====================
+        console.log('========== 一、JS 对象 ==========');
+
+        // 创建：{ 键: 值, 键: 值 }
+        let hero = {
+            name: '萧炎',
+            age: 17,
+            level: '斗者'
+        };
+
+        // 读取：点语法 / 方括号
+        console.log(hero.name);          // 萧炎
+        console.log(hero['age']);        // 17
+
+        // 新增 + 修改：直接赋值
+        hero.skill = '八极崩';
+        hero.age = 18;
+        console.log(hero);
+
+        // 删除
+        delete hero.skill;
+
+        // 构造函数：批量生产
+        function Role(name, power) {
+            this.name = name;
+            this.power = power;
+        }
+        let r1 = new Role('萧炎', 9999);
+        let r2 = new Role('药老', 8500);
+        console.log(r1, r2);
+
+
+        // ==================== 二、方法 + this ====================
+        console.log('========== 二、方法 ==========');
+
+        let char = {
+            name: '萧炎',
+            hp: 100,
+            show() {                              // ES6 简写
+                console.log(this.name + ' HP:' + this.hp);
+            }
+        };
+        char.show();                              // this → char（谁调用指向谁）
+
+
+        // ==================== 三、JSON ====================
+        console.log('========== 三、JSON ==========');
+
+        /*
+        ★ JSON 是什么？
+          = JavaScript Object Notation（JS 对象记法）
+          = 前后端通信的数据格式，本质就是一个字符串
+          = 比 JS 对象更严格：键必须双引号，不能有函数
+
+        JS 对象  vs  JSON 字符串
+        ─────────────────────────
+        内存里的数据    传输用的文本
+        可以含函数      纯数据，函数不行
+        键可不加引号    键必须双引号
+        用 . 和 [] 访问  必须先 JSON.parse() 转成对象
+        */
+
+        // JS 对象
+        let obj = { name: '萧炎', age: 17 };
+
+        // 对象 → JSON 字符串（发送给后端时用）
+        let jsonStr = JSON.stringify(obj);
+        console.log('JSON 字符串：', jsonStr);     // {"name":"萧炎","age":17}
+        console.log('类型：', typeof jsonStr);      // string
+
+        // JSON 字符串 → 对象（接收后端数据时用）
+        let parsed = JSON.parse(jsonStr);
+        console.log('解析回对象：', parsed.name);    // 萧炎
+        console.log('类型：', typeof parsed);        // object
+
+        // 典型场景：后端返回的 JSON
+        let response = '{"code":200,"data":[{"name":"萧炎","power":9999},{"name":"药老","power":8500}]}';
+        let result = JSON.parse(response);
+        console.log('状态码：', result.code);           // 200
+        console.log('第一个角色：', result.data[0].name); // 萧炎
+
+
+        // ==================== 四、对比速查 ====================
+        console.log('========== 四、JSON 格式规则 ==========');
+
+        // ✅ JSON 合法
+        JSON.parse('{"name":"萧炎","age":17}');          // 键用双引号
+
+        // ❌ 以下都会报错：
+        // JSON.parse("{name:'萧炎'}");                  // 键没加双引号
+        // JSON.parse("{'name':'萧炎'}");                // 单引号不行
+        // JSON.parse('{"fn":function(){}}');            // 不能有函数
+        // JSON.parse('{"date":new Date()}');            // 不能有 JS 对象
+
+        console.log('JSON 解析验证通过！');
+
+        /*
+        ★ 口诀：
+          JSON.stringify(obj)  →  JS 对象 → JSON 字符串（发给后端）
+          JSON.parse(str)      →  JSON 字符串 → JS 对象（接收后端数据）
+        */
+    </script>
+
+</body>
+</html>

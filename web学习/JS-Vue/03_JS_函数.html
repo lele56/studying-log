@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS 函数 · 条件判断 · 循环</title>
+
+    <!--
+    本节课重点：
+      ✓ 具名函数（function 关键字声明）
+      ✓ 匿名函数（没有名字的函数）
+      ✓ 箭头函数（=> 简洁写法）
+      ✓ 参数与返回值
+      ✓ 条件判断 if / else
+      ✓ for 循环
+    -->
+</head>
+<body>
+
+    <h1>JS 函数 · 条件判断 · 循环 —— 按 F12 查看控制台</h1>
+
+    <script>
+        // ==================== 一、条件判断 if / else ====================
+        console.log('========== 一、条件判断 ==========');
+
+        /*
+        语法：
+          if (条件) { 条件成立时执行 }
+          else if (另一个条件) { ... }
+          else { 以上都不满足时执行 }
+
+        比较运算符：
+          >  大于          <  小于
+          >= 大于等于       <= 小于等于
+          === 严格等于      !== 严格不等于
+        */
+
+        let score = 85;
+
+        if (score >= 90) {
+            console.log('优秀');
+        } else if (score >= 60) {
+            console.log('及格');                   // 85 → 命中这里
+        } else {
+            console.log('不及格');
+        }
+
+        // 三元运算符：条件 ? 真时的值 : 假时的值（if/else 的简写）
+        let result = score >= 60 ? '通过' : '挂科';
+        console.log('三元运算结果：', result);      // 通过
+
+        // 逻辑运算符：&&（与） ||（或） !（非）
+        let hasTicket = true;
+        let hasID = false;
+        console.log('能进考场？', hasTicket && hasID);  // false（缺一不可）
+
+
+        // ==================== 二、for 循环 ====================
+        console.log('========== 二、for 循环 ==========');
+
+        /*
+        语法：for (初始化; 循环条件; 每次循环后执行) { 循环体 }
+
+        执行顺序：
+          ① 初始化（只执行一次）
+          ② 判断条件 → true 就进入③，false 就退出
+          ③ 执行循环体
+          ④ 执行"每次循环后"的代码
+          ⑤ 回到②
+        */
+
+        for (let i = 1; i <= 5; i++) {
+            console.log('第 ' + i + ' 次循环');
+        }
+
+        // 遍历数组（和 for 配合的天作之合）
+        let students = ['萧炎', '药老', '纳兰嫣然', '云韵'];
+        console.log('--- 遍历数组 ---');
+        for (let i = 0; i < students.length; i++) {
+            console.log('第 ' + (i + 1) + ' 位：' + students[i]);
+        }
+
+
+        // ==================== 三、函数基础 ====================
+        console.log('========== 三、函数基础 ==========');
+
+        /*
+        ★ 函数是什么？
+          = 一段可以重复使用的代码块
+          = 给一堆操作起个名字，需要的时候直接"叫名字"
+          = 就像遥控器上的按钮，按一下执行一组操作
+
+        为什么要用函数？
+          - 避免重复写相同的代码
+          - 逻辑清晰，好维护
+          - 可以把大问题拆成小问题
+        */
+
+        // ==================== 3-1 具名函数（函数声明）====================
+        console.log('--- 具名函数 ---');
+
+        /*
+        语法：
+          function 函数名(参数1, 参数2, ...) {
+              函数体 —— 要执行的代码
+              return 返回值;  // 可选，没有 return 默认返回 undefined
+          }
+
+        具名函数的特点：
+          - 可以在声明之前调用（函数提升）
+          - 有自己的名字，方便调试时看调用栈
+          - 最传统的写法
+        */
+
+        // 定义一个具名函数
+        function greet(name) {
+            return '你好，' + name + '！';
+        }
+
+        // 调用函数
+        let msg1 = greet('萧炎');
+        console.log(msg1);                         // 你好，萧炎！
+
+        console.log(greet('药老'));                 // 你好，药老！（可以直接包在 log 里）
+
+        // 多参数 + 有返回值
+        function add(a, b) {
+            return a + b;
+        }
+        console.log('3 + 5 =', add(3, 5));         // 8
+
+        // 无返回值的函数：默认返回 undefined
+        function sayHi() {
+            console.log('Hi~');
+            // 没有 return → 返回 undefined
+        }
+        let result2 = sayHi();
+        console.log('无 return 的返回值：', result2); // undefined
+
+        // 函数提升：可以在声明之前调用（仅函数声明有这特性）
+        console.log('函数提升：', add2(2, 3));       // 5（能在定义前调用！）
+        function add2(x, y) { return x + y; }
+
+
+        // ==================== 3-2 匿名函数 ====================
+        console.log('--- 匿名函数 ---');
+
+        /*
+        什么是匿名函数？
+          = 没有名字的函数
+          = 通常赋值给变量，或者作为参数传给另一个函数
+
+        用途：
+          - 回调函数（事件处理、定时器）
+          - 立即执行函数
+          - 作为参数传递
+        */
+
+        // ① 赋值给变量（函数表达式）
+        let multiply = function(a, b) {
+            return a * b;
+        };
+        console.log('4 × 5 =', multiply(4, 5));     // 20
+
+        /*
+        ★ 和具名函数的区别：
+          具名函数 function fn(){}    → 可以在定义前调用（函数提升）
+          函数表达式 let fn = function(){} → 不能在赋值前调用（会报错）
+        */
+
+        // ② 作为回调函数 —— 传给另一个函数，让它在合适的时候调用
+        console.log('--- 回调函数 ---');
+
+        // setTimeout：延迟执行（2000 毫秒 = 2 秒后执行）
+        setTimeout(function() {
+            console.log('2 秒后：这是匿名函数回调！');
+        }, 2000);
+
+        console.log('这行会先打印（因为 setTimeout 是异步的）');
+
+
+        // ==================== 3-3 箭头函数（ES6）====================
+        console.log('--- 箭头函数 ---');
+
+        /*
+        语法：
+          (参数1, 参数2) => { 函数体 }
+          (参数1, 参数2) => 返回值          // 只有一行时，{} 和 return 都可以省
+          参数 => 返回值                    // 只有一个参数时，() 也可以省
+
+        特点：
+          - 写起来更短
+          - 没有自己的 this（适合回调，初学者先不用管）
+          - 不能用作构造函数
+        */
+
+        // 完整写法
+        let arrow1 = (a, b) => { return a + b; };
+        console.log('箭头函数 1+2：', arrow1(1, 2));  // 3
+
+        // 简写：只有一行 return 时，省掉 {} 和 return
+        let arrow2 = (a, b) => a + b;
+        console.log('简写 3+4：', arrow2(3, 4));      // 7
+
+        // 单参数：小括号也可以省
+        let double = x => x * 2;
+        console.log('double(5)：', double(5));        // 10
+
+        // 无参数：小括号不能省
+        let sayHello = () => console.log('Hello from arrow!');
+        sayHello();
+
+        // 箭头函数作回调（最常见的用法）
+        setTimeout(() => {
+            console.log('3 秒后：箭头函数回调！');
+        }, 3000);
+
+
+        // ==================== 四、三种函数写法对比 ====================
+        console.log('========== 四、三种写法对比 ==========');
+
+        // 同一个功能，三种写法：
+
+        // ① 具名函数
+        function power1(base, exp) {
+            let result = 1;
+            for (let i = 0; i < exp; i++) {
+                result *= base;
+            }
+            return result;
+        }
+
+        // ② 匿名函数（函数表达式）
+        let power2 = function(base, exp) {
+            let result = 1;
+            for (let i = 0; i < exp; i++) {
+                result *= base;
+            }
+            return result;
+        };
+
+        // ③ 箭头函数
+        let power3 = (base, exp) => {
+            let result = 1;
+            for (let i = 0; i < exp; i++) {
+                result *= base;
+            }
+            return result;
+        };
+
+        console.log('具名函数 2^3：', power1(2, 3));   // 8
+        console.log('匿名函数 2^3：', power2(2, 3));   // 8
+        console.log('箭头函数 2^3：', power3(2, 3));   // 8
+
+
+        // ==================== 五、实战：用函数封装待办操作 ====================
+        console.log('========== 五、实战演练 ==========');
+
+        let todos = ['学 HTML', '学 CSS', '学 JS'];
+
+        // 添加待办
+        function addTodo(list, item) {
+            list.push(item);
+            console.log('添加 "' + item + '" → ' + list.length + ' 条待办');
+        }
+
+        // 显示所有待办
+        function showTodos(list) {
+            console.log('--- 待办列表 ---');
+            for (let i = 0; i < list.length; i++) {
+                console.log((i + 1) + '. ' + list[i]);
+            }
+        }
+
+        // 查找待办
+        function findTodo(list, keyword) {
+            for (let i = 0; i < list.length; i++) {
+                if (list[i].indexOf(keyword) !== -1) {
+                    return list[i];                  // 找到就返回
+                }
+            }
+            return '没找到';                         // 没找到
+        }
+
+        addTodo(todos, '学 Vue');
+        showTodos(todos);
+        console.log('搜索 "CSS"：', findTodo(todos, 'CSS'));   // 学 CSS
+        console.log('搜索 "Java"：', findTodo(todos, 'Java'));  // 没找到
+
+        /*
+        ★ 三种函数写法总结：
+          写法       |  适用场景                |  能提升吗
+          具名函数    |  主要逻辑、工具函数       |  ✅ 能
+          匿名函数    |  回调、一次性使用         |  ❌ 不能
+          箭头函数    |  短回调、简单逻辑         |  ❌ 不能
+        */
+    </script>
+
+</body>
+</html>
