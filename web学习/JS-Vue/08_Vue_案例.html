@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue 指令：v-for v-bind v-if</title>
+    <style>
+        :root { --bg:#f9fafb; --white:#fff; --black:#1f2937; --gray-50:#f3f4f6; --gray-100:#e5e7eb; --gray-300:#d1d5db; --gray-400:#9ca3af; --gray-500:#6b7280; --gray-600:#4b5563; --gray-700:#374151; --blue:#3b82f6; --blue-h:#2563eb; --blue-bg:#eff6ff; --red:#ef4444; --green:#22c55e; --radius:8px; --shadow:0 1px 3px rgba(0,0,0,.06); }
+        body { margin:0; background:var(--bg); font-family:"Microsoft YaHei",sans-serif; }
+        .navbar { background:var(--black); padding:14px 24px; display:flex; justify-content:space-between; align-items:center; }
+        .navbar h1 { color:var(--white); font-size:20px; margin:0; }
+        .navbar a { color:var(--gray-400); font-size:14px; text-decoration:none; }
+        .card { max-width:780px; margin:24px auto; padding:20px 24px; background:var(--white); border:1px solid var(--gray-100); border-radius:var(--radius); box-shadow:var(--shadow); }
+        button { padding:7px 20px; border:none; border-radius:4px; font-size:14px; cursor:pointer; transition:.3s; }
+        .btn-primary { background:var(--blue); color:var(--white); }
+        .btn-primary:hover { background:var(--blue-h); }
+        .btn-danger { background:var(--red); color:var(--white); font-size:12px; padding:3px 10px; }
+
+        table { width:100%; border-collapse:collapse; font-size:14px; }
+        thead { background:var(--gray-50); }
+        th { padding:12px 16px; text-align:left; font-weight:600; color:var(--gray-700); border-bottom:2px solid var(--gray-100); }
+        td { padding:12px 16px; color:var(--gray-600); border-bottom:1px solid var(--gray-50); }
+        tbody tr:nth-child(even) { background:var(--bg); }
+        tbody tr:hover { background:var(--blue-bg); }
+        .footer { background:var(--black); text-align:center; padding:24px 0; margin-top:40px; font-size:13px; color:var(--gray-400); }
+
+        /* v-bind:class 演示的样式 */
+        .tag { display:inline-block; padding:2px 8px; border-radius:4px; font-size:12px; }
+        .tag-done { background:#dcfce7; color:#166534; }
+        .tag-doing { background:#dbeafe; color:#1e40af; }
+        .tag-todo { background:#f3f4f6; color:#6b7280; }
+
+        /* v-bind 演示区 */
+        .demo-row { display:flex; gap:12px; align-items:center; margin:8px 0; }
+        .demo-box { width:60px; height:60px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; color:#fff; font-size:12px; margin:4px; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+
+    <!-- 导航栏 -->
+    <div class="navbar">
+        <h1>📋 Vue 指令：v-for | v-bind | v-if</h1>
+        <a href="#">退出登录</a>
+    </div>
+
+    <!-- ========== 1. v-bind 演示 ========== -->
+    <div class="card">
+        <h3 style="margin:0 0 12px;color:var(--gray-700)">v-bind — 把 data 绑定到属性上</h3>
+
+        <!--
+        ★ v-bind 就是把 JS 变量的值，动态赋给 HTML 属性
+           写法：v-bind:属性名="变量"   简写： :属性名="变量"
+
+           能绑什么？class、style、disabled、title、src、href……
+           跟 {{ }} 的区别：{{ }} 用在标签内容，v-bind 用在标签属性
+        -->
+        <div class="demo-row">
+            <!-- 绑定 disabled：少于 2 条时按钮不可点 -->
+            <button class="btn-primary" :disabled="todos.length < 2">
+                提交（需 >= 2 条）
+            </button>
+            <span style="font-size:13px;color:var(--gray-500)">
+                ← 当前 {{ todos.length }} 条，{{ todos.length < 2 ? '不可点' : '可点' }}
+            </span>
+        </div>
+
+        <div class="demo-row">
+            <!-- 绑定 title：鼠标悬停看提示 -->
+            <button class="btn-primary" :title="'共 ' + todos.length + ' 条待办'">
+                悬停看提示
+            </button>
+        </div>
+
+        <div class="demo-row">
+            <!-- 绑定 style 对象：动态背景色、字号 -->
+            <span class="demo-box" :style="{ background: boxColor, fontSize: boxSize + 'px' }">
+                {{ boxSize }}px
+            </span>
+            <button class="btn-primary" @click="boxSize += 4">变大</button>
+            <button class="btn-primary" @click="boxColor = boxColor === '#3b82f6' ? '#ef4444' : '#3b82f6'">换色</button>
+        </div>
+    </div>
+
+    <!-- ========== 2. v-for + v-if + v-bind 表格 ========== -->
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:50px">序号</th>
+                    <th>待办事项</th>
+                    <th style="width:110px">优先级</th>
+                    <th style="width:80px">状态</th>
+                    <th style="width:100px">截止日期</th>
+                    <th style="width:60px">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <!--
+                ★ v-for：循环渲染，语法和 for...of 一样
+                   v-for="(item, index) in list"
+                   :key 必须有（Vue 靠它追踪每条数据）
+                -->
+                <tr v-for="(item, index) in todos" :key="item.id">
+
+                    <!--
+                    ★ v-bind:class — 根据数据动态切换 class
+                       对象写法 { class名: 条件 }
+                    -->
+                    <td :class="{ 'tag-todo': item.status === '📝 未开始' }">{{ index + 1 }}</td>
+                    <td>{{ item.title }}</td>
+
+                    <!-- v-bind:style + v-bind:title -->
+                    <td>
+                        <span
+                            :style="{ fontWeight: item.priority === '🔴 高' ? 'bold' : 'normal' }"
+                            :title="'截止日期：' + item.date"
+                        >{{ item.priority }}</span>
+                    </td>
+
+                    <!--
+                    ★ v-if / v-else-if / v-else — 条件渲染
+                    -->
+                    <td>
+                        <span v-if="item.status === '✅ 已完成'"     class="tag tag-done">{{ item.status }}</span>
+                        <span v-else-if="item.status === '⏳ 进行中'" class="tag tag-doing">{{ item.status }}</span>
+                        <span v-else                                    class="tag tag-todo">{{ item.status }}</span>
+                    </td>
+
+                    <td>{{ item.date }}</td>
+                    <td>
+                        <button class="btn-danger" @click="removeTodo(item.id)">删除</button>
+                    </td>
+                </tr>
+
+                <!-- v-if 空状态 -->
+                <tr v-if="todos.length === 0">
+                    <td colspan="6" style="text-align:center;color:var(--gray-400);padding:20px">暂无待办</td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+    <footer class="footer">© 2026 Vue 待办</footer>
+</div>
+
+<script type="module">
+    import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+    createApp({
+        data() {
+            return {
+                boxColor: '#3b82f6',
+                boxSize: 24,
+                todos: [
+                    { id:1, title:'完成 HTML 基础学习笔记', priority:'🔴 高', status:'⏳ 进行中', date:'2026-09-21' },
+                    { id:2, title:'复习 CSS 盒模型与弹性布局', priority:'🔴 高', status:'📝 未开始', date:'2026-09-22' },
+                    { id:3, title:'练习 form 表单提交',          priority:'🟡 中', status:'📝 未开始', date:'2026-09-23' },
+                    { id:4, title:'学习 JavaScript 基础语法',    priority:'🟡 中', status:'📝 未开始', date:'2026-09-25' },
+                    { id:5, title:'搭建个人博客首页',            priority:'🟢 低', status:'📝 未开始', date:'2026-09-30' },
+                    { id:6, title:'每天背 20 个英语单词',        priority:'🟢 低', status:'✅ 已完成', date:'2026-09-20' },
+                ],
+                nextId: 7
+            }
+        },
+        methods: {
+            removeTodo(id) {
+                this.todos = this.todos.filter(t => t.id !== id)
+            }
+        }
+    }).mount('#app')
+
+    /*
+    ★ 08 三大指令速查：
+
+      v-for="(item, i) in list"   →  循环渲染列表
+      :key="item.id"             →  v-for 必需，唯一标识每条数据
+
+      v-bind:属性="变量"          →  变量值动态赋给 HTML 属性
+      简写 :属性="变量"           →  最常用写法
+      用途 :class :style :disabled :title :href :src ...
+
+      v-if="条件"                →  条件为真才渲染元素（DOM 增删）
+      v-else-if / v-else         →  多分支条件
+      v-show="条件"              →  条件为真才显示（display:none）
+    */
+</script>
+
+</body>
+</html>

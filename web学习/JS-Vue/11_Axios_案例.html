@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>待办事项 — Axios 动态查询</title>
+    <style>
+        :root { --bg:#f9fafb; --white:#fff; --black:#1f2937; --gray-50:#f3f4f6; --gray-100:#e5e7eb; --gray-300:#d1d5db; --gray-400:#9ca3af; --gray-500:#6b7280; --gray-600:#4b5563; --gray-700:#374151; --blue:#3b82f6; --blue-h:#2563eb; --blue-bg:#eff6ff; --red:#ef4444; --green:#22c55e; }
+        body { margin:0; background:var(--bg); font-family:"Microsoft YaHei",sans-serif; }
+        .navbar { background:var(--black); padding:14px 24px; display:flex; justify-content:space-between; align-items:center; }
+        .navbar h1 { color:var(--white); font-size:20px; margin:0; letter-spacing:2px; }
+        .navbar a { color:var(--gray-400); font-size:14px; text-decoration:none; }
+        .navbar a:hover { color:var(--white); }
+        .card { max-width:780px; margin:24px auto; padding:20px 24px; background:var(--white); border:1px solid var(--gray-100); border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,.06); }
+        .form-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+        .form-row label { font-size:14px; color:var(--gray-700); font-weight:500; white-space:nowrap; }
+        input[type="text"],select { padding:7px 10px; border:1px solid var(--gray-300); border-radius:4px; font-size:14px; outline:none; transition:.3s; }
+        input[type="text"]:focus,select:focus { border-color:var(--blue); box-shadow:0 0 0 2px rgba(59,130,246,.15); }
+        button { padding:7px 20px; border:none; border-radius:4px; font-size:14px; cursor:pointer; transition:.3s; }
+        .btn-primary { background:var(--blue); color:var(--white); }
+        .btn-primary:hover { background:var(--blue-h); }
+        .btn-reset { background:var(--white); color:var(--gray-700); border:1px solid var(--gray-300); }
+        .btn-reset:hover { background:var(--gray-50); }
+        table { width:100%; border-collapse:collapse; font-size:14px; }
+        thead { background:var(--gray-50); }
+        th { padding:12px 16px; text-align:left; font-weight:600; color:var(--gray-700); border-bottom:2px solid var(--gray-100); }
+        td { padding:12px 16px; color:var(--gray-600); border-bottom:1px solid var(--gray-50); }
+        tbody tr:nth-child(even) { background:var(--bg); }
+        tbody tr:hover { background:var(--blue-bg); }
+        .tag { display:inline-block; padding:2px 8px; border-radius:4px; font-size:12px; }
+        .tag-done { background:#dcfce7; color:#166534; }
+        .tag-todo { background:#f3f4f6; color:#6b7280; }
+        .t-pri-high { font-weight:bold; }
+        .footer { background:var(--black); text-align:center; padding:24px 0; margin-top:40px; font-size:13px; color:var(--gray-400); }
+        .footer a { color:var(--gray-400); text-decoration:none; margin:0 8px; }
+        .footer a:hover { color:var(--white); }
+    </style>
+</head>
+<body>
+
+<div id="app">
+
+    <div class="navbar">
+        <h1>📋 我的待办</h1>
+        <a href="#">退出登录</a>
+    </div>
+
+    <!--
+    ★ 筛选表单 — 和 HTML 版结构一致
+      v-model 收集筛选条件
+      @click  触发 axios 请求
+      @keyup.enter  回车搜索
+    -->
+    <div class="card">
+        <div class="form-row">
+            <label for="keyword">关键词：</label>
+            <input type="text" id="keyword" v-model="keyword"
+                   placeholder="搜索待办事项" @keyup.enter="doQuery">
+
+            <label for="priority">优先级：</label>
+            <select id="priority" v-model="priority">
+                <option value="">不限</option>
+                <option value="high">🔴 高</option>
+                <option value="mid">🟡 中</option>
+                <option value="low">🟢 低</option>
+            </select>
+
+            <label for="status">状态：</label>
+            <select id="status" v-model="status">
+                <option value="">不限</option>
+                <option value="done">✅ 已完成</option>
+                <option value="todo">📝 未完成</option>
+            </select>
+
+            <button class="btn-primary" @click="doQuery">筛选</button>
+            <button class="btn-reset" @click="resetQuery">重置</button>
+        </div>
+    </div>
+
+    <!-- 表格 — v-for 渲染 -->
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:50px">序号</th>
+                    <th>待办事项</th>
+                    <th style="width:90px">优先级</th>
+                    <th style="width:80px">状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(item, index) in filterList" :key="item.id">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ item.title }}</td>
+                    <td>
+                        <span :class="{ 't-pri-high': item.priority === '🔴 高' }">
+                            {{ item.priority || '-' }}
+                        </span>
+                    </td>
+                    <td>
+                        <span v-if="item.completed" class="tag tag-done">✅ 已完成</span>
+                        <span v-else class="tag tag-todo">📝 未完成</span>
+                    </td>
+                </tr>
+                <tr v-if="filterList.length === 0">
+                    <td colspan="4" style="text-align:center;color:var(--gray-400);padding:20px">
+                        {{ loading ? '加载中...' : '暂无数据' }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <footer class="footer">
+        <div>
+            <a href="#">关于我们</a>
+            <a href="#">帮助中心</a>
+            <a href="#">隐私政策</a>
+        </div>
+        <div style="margin-top:8px;color:var(--gray-500)">© 2026 我的待办</div>
+    </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script type="importmap">
+    { "imports": { "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js" } }
+</script>
+<script type="module">
+    import { createApp } from 'vue'
+
+    createApp({
+        data() {
+            return {
+                keyword: '',          // 搜索关键词
+                priority: '',         // high / mid / low / ''
+                status: '',           // done / todo / ''
+                rawList: [],          // 服务器原始数据
+                loading: false,
+                priorities: {         // 给远程序数据随机分配优先级
+                    1:'🔴 高', 2:'🟡 中', 3:'🟢 低', 4:'🔴 高', 5:'🟡 中'
+                }
+            }
+        },
+
+        // ★ computed：关键词 + 优先级 + 状态的本地过滤
+        computed: {
+            filterList() {
+                let list = this.rawList;
+                if (this.keyword) {
+                    let kw = this.keyword.toLowerCase();
+                    list = list.filter(item => item.title.toLowerCase().includes(kw));
+                }
+                if (this.priority) {
+                    list = list.filter(item => item._pri === this.priority);
+                }
+                if (this.status === 'done') {
+                    list = list.filter(item => item.completed);
+                }
+                if (this.status === 'todo') {
+                    list = list.filter(item => !item.completed);
+                }
+                return list;
+            }
+        },
+
+        methods: {
+            /*
+            ★ axios 请求 — 从服务器拉数据
+            */
+            doQuery() {
+                this.loading = true;
+                axios.get('https://jsonplaceholder.typicode.com/todos?_limit=20')
+                    .then(res => {
+                        this.loading = false;
+                        // 给远程数据加自定义字段
+                        this.rawList = res.data.map(item => ({
+                            ...item,
+                            _pri: this.pickPri(item.id)
+                        }));
+                    })
+                    .catch(err => {
+                        this.loading = false;
+                        alert('请求失败：' + err.message);
+                    });
+            },
+
+            // ★ 重置：清空筛选条件，重新拉数据
+            resetQuery() {
+                this.keyword = '';
+                this.priority = '';
+                this.status = '';
+                this.doQuery();
+            },
+
+            // 给每条数据随机分配一个"优先级"（API 本身没有优先级字段）
+            pickPri(id) {
+                let keys = Object.keys(this.priorities);
+                let i = id % keys.length;
+                return this.priorities[keys[i]];
+            }
+        },
+
+        /*
+        ★ mounted 钩子：页面加载完成后自动执行一次查询
+          以后进页面就能直接看到数据，不用手动点按钮
+        */
+        mounted() {
+            this.doQuery();
+        }
+    }).mount('#app')
+
+    /*
+    ★ 本文件重点：
+
+      1. mounted()        →  页面加载后自动执行，初始化数据
+      2. computed 过滤     →  关键词 + 优先级 + 状态三个维度筛选
+      3. axios.get + 参数  →  ?_limit=20  限制返回条数
+      4. resetQuery()     →  清空条件 → 重新请求 → 表格还原
+
+      数据流转：
+        页面加载 → mounted() → doQuery() → axios.get
+          → .then(res) → rawList = res.data
+          → computed filterList 根据筛选条件过滤
+          → v-for 渲染表格
+
+      为什么用 computed 而不是 methods？
+        只有 rawList / keyword / priority / status 变化时才重新计算
+        比 methods 高效，Vue 自动缓存结果
+    */
+</script>
+
+</body>
+</html>

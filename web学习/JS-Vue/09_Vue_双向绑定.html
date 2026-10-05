@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue 指令：v-model 双向绑定</title>
+    <style>
+        :root { --bg:#f9fafb; --white:#fff; --black:#1f2937; --gray-50:#f3f4f6; --gray-100:#e5e7eb; --gray-300:#d1d5db; --gray-400:#9ca3af; --gray-500:#6b7280; --gray-600:#4b5563; --gray-700:#374151; --blue:#3b82f6; --blue-h:#2563eb; --blue-bg:#eff6ff; --red:#ef4444; --green:#22c55e; --radius:8px; --shadow:0 1px 3px rgba(0,0,0,.06); }
+        body { margin:0; background:var(--bg); font-family:"Microsoft YaHei",sans-serif; }
+        .navbar { background:var(--black); padding:14px 24px; display:flex; justify-content:space-between; align-items:center; }
+        .navbar h1 { color:var(--white); font-size:20px; margin:0; }
+        .navbar a { color:var(--gray-400); font-size:14px; text-decoration:none; }
+        .card { max-width:780px; margin:24px auto; padding:20px 24px; background:var(--white); border:1px solid var(--gray-100); border-radius:var(--radius); box-shadow:var(--shadow); }
+        .form-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+        .form-row label { font-size:14px; color:var(--gray-700); font-weight:500; white-space:nowrap; }
+        .form-row input,.form-row select { padding:7px 10px; border:1px solid var(--gray-300); border-radius:4px; font-size:14px; outline:none; }
+        .form-row input:focus,.form-row select:focus { border-color:var(--blue); box-shadow:0 0 0 2px rgba(59,130,246,.15); }
+        button { padding:7px 20px; border:none; border-radius:4px; font-size:14px; cursor:pointer; transition:.3s; }
+        .btn-primary { background:var(--blue); color:var(--white); }
+        .btn-primary:hover { background:var(--blue-h); }
+        .btn-danger { background:var(--red); color:var(--white); font-size:12px; padding:3px 10px; }
+        .btn-reset { background:var(--white); color:var(--gray-700); border:1px solid var(--gray-300); }
+        .btn-reset:hover { background:var(--gray-50); }
+
+        table { width:100%; border-collapse:collapse; font-size:14px; }
+        thead { background:var(--gray-50); }
+        th { padding:12px 16px; text-align:left; font-weight:600; color:var(--gray-700); border-bottom:2px solid var(--gray-100); }
+        td { padding:12px 16px; color:var(--gray-600); border-bottom:1px solid var(--gray-50); }
+        tbody tr:nth-child(even) { background:var(--bg); }
+        tbody tr:hover { background:var(--blue-bg); }
+        .footer { background:var(--black); text-align:center; padding:24px 0; margin-top:40px; font-size:13px; color:var(--gray-400); }
+
+        .tag { display:inline-block; padding:2px 8px; border-radius:4px; font-size:12px; }
+        .tag-done { background:#dcfce7; color:#166534; }
+        .tag-doing { background:#dbeafe; color:#1e40af; }
+        .tag-todo { background:#f3f4f6; color:#6b7280; }
+
+        .demo-row { display:flex; gap:12px; align-items:center; margin:8px 0; }
+        .demo-box { width:60px; height:60px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; color:#fff; font-size:12px; margin:4px; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+
+    <div class="navbar">
+        <h1>📋 Vue 指令：v-model 双向绑定</h1>
+        <a href="#">退出登录</a>
+    </div>
+
+    <!-- ========== 1. v-model 演示 ========== -->
+    <div class="card">
+        <h3 style="margin:0 0 12px;color:var(--gray-700)">
+            v-model — 输入框和数据自动同步
+        </h3>
+
+        <!--
+        ★ v-model = 双向绑定
+           数据 → 页面：data 变了，输入框自动显示新值
+           页面 → 数据：用户输入了，data 自动更新
+
+           本质是 :value + @input 的语法糖，Vue 帮你合并了
+        -->
+        <div class="demo-row">
+            <label>姓名：</label>
+            <input v-model="name" placeholder="输入姓名">
+            <span style="font-size:13px;color:var(--gray-500)">
+                ← 实时：{{ name || '（空）' }}
+            </span>
+        </div>
+    </div>
+
+    <!-- ========== 2. v-model 绑定各种控件 ========== -->
+    <div class="card">
+        <h3 style="margin:0 0 12px;color:var(--gray-700)">v-model 绑定不同表单控件</h3>
+        <div class="form-row">
+
+            <!-- 文本框 -->
+            <label>文本：</label>
+            <input v-model="text" placeholder="输入文字">
+
+            <!-- 下拉框 -->
+            <label>优先级：</label>
+            <select v-model="priority">
+                <option value="🔴 高">🔴 高</option>
+                <option value="🟡 中">🟡 中</option>
+                <option value="🟢 低">🟢 低</option>
+            </select>
+
+            <!-- 复选框 -->
+            <label>
+                <input type="checkbox" v-model="checked"> 已完成
+            </label>
+
+            <!-- 单选框 -->
+            <label>
+                <input type="radio" v-model="status" value="📝 未开始"> 未开始
+            </label>
+            <label>
+                <input type="radio" v-model="status" value="⏳ 进行中"> 进行中
+            </label>
+
+            <!-- v-on 清空按钮 -->
+            <button class="btn-reset" @click="clearForm">
+                一键清空
+            </button>
+        </div>
+
+        <!-- 实时预览 -->
+        <div class="result" style="margin-top:12px;padding:10px;background:var(--gray-50);border-radius:4px;font-size:13px;color:var(--gray-700)">
+            预览：{{ text || '（空）' }} | {{ priority }} | {{ checked ? '✅' : '❌' }} | {{ status }}
+        </div>
+    </div>
+
+    <!-- ========== 3. v-model 添加待办 ========== -->
+    <div class="card">
+        <h3 style="margin:0 0 12px;color:var(--gray-700)">实战：v-model 添加待办</h3>
+
+        <!--
+        ★ 这里 v-model 和 @click 配合：
+           v-model 收集用户输入 → @click 触发方法 → 写入数组
+        -->
+        <div class="form-row">
+            <label>待办内容：</label>
+            <input v-model="addTitle" placeholder="输入待办事项" @keyup.enter="addTodo">
+
+            <label>优先级：</label>
+            <select v-model="addPriority">
+                <option value="🔴 高">🔴 高</option>
+                <option value="🟡 中">🟡 中</option>
+                <option value="🟢 低">🟢 低</option>
+            </select>
+
+            <button class="btn-primary" @click="addTodo">添加</button>
+        </div>
+    </div>
+
+    <!-- ========== 4. v-for + v-if + v-bind 表格 ========== -->
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:50px">序号</th>
+                    <th>待办事项</th>
+                    <th style="width:110px">优先级</th>
+                    <th style="width:80px">状态</th>
+                    <th style="width:100px">截止日期</th>
+                    <th style="width:60px">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(item, index) in todos" :key="item.id">
+                    <td :class="{ 'tag-todo': item.status === '📝 未开始' }">{{ index + 1 }}</td>
+                    <td>{{ item.title }}</td>
+                    <td>
+                        <span
+                            :style="{ fontWeight: item.priority === '🔴 高' ? 'bold' : 'normal' }"
+                            :title="'截止日期：' + item.date"
+                        >{{ item.priority }}</span>
+                    </td>
+                    <td>
+                        <span v-if="item.status === '✅ 已完成'"     class="tag tag-done">{{ item.status }}</span>
+                        <span v-else-if="item.status === '⏳ 进行中'" class="tag tag-doing">{{ item.status }}</span>
+                        <span v-else                                    class="tag tag-todo">{{ item.status }}</span>
+                    </td>
+                    <td>{{ item.date }}</td>
+                    <td>
+                        <button class="btn-danger" @click="removeTodo(item.id)">删除</button>
+                    </td>
+                </tr>
+                <tr v-if="todos.length === 0">
+                    <td colspan="6" style="text-align:center;color:var(--gray-400);padding:20px">暂无待办</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <footer class="footer">© 2026 Vue 待办</footer>
+</div>
+
+<script type="module">
+    import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+    createApp({
+        data() {
+            return {
+                // v-model 控件演示
+                name: '',
+                text: '',
+                priority: '🟡 中',
+                checked: false,
+                status: '📝 未开始',
+
+                // 添加待办
+                addTitle: '',
+                addPriority: '🟡 中',
+
+                // 待办列表
+                todos: [
+                    { id:1, title:'完成 HTML 基础学习笔记', priority:'🔴 高', status:'⏳ 进行中', date:'2026-09-21' },
+                    { id:2, title:'复习 CSS 盒模型与弹性布局', priority:'🔴 高', status:'📝 未开始', date:'2026-09-22' },
+                    { id:3, title:'练习 form 表单提交',          priority:'🟡 中', status:'📝 未开始', date:'2026-09-23' },
+                    { id:4, title:'学习 JavaScript 基础语法',    priority:'🟡 中', status:'📝 未开始', date:'2026-09-25' },
+                    { id:5, title:'搭建个人博客首页',            priority:'🟢 低', status:'📝 未开始', date:'2026-09-30' },
+                    { id:6, title:'每天背 20 个英语单词',        priority:'🟢 低', status:'✅ 已完成', date:'2026-09-20' },
+                ],
+                nextId: 7
+            }
+        },
+        methods: {
+            // 添加待办
+            addTodo() {
+                if (!this.addTitle.trim()) return
+                this.todos.push({
+                    id: this.nextId++,
+                    title: this.addTitle,
+                    priority: this.addPriority,
+                    status: '📝 未开始',
+                    date: new Date().toISOString().slice(0, 10)
+                })
+                this.addTitle = ''
+            },
+
+            // 删除待办
+            removeTodo(id) {
+                this.todos = this.todos.filter(t => t.id !== id)
+            },
+
+            // ★ v-on 一键清空
+            // 恢复所有表单数据为初始值
+            clearForm() {
+                this.name = ''
+                this.text = ''
+                this.priority = '🟡 中'
+                this.checked = false
+                this.status = '📝 未开始'
+            }
+        }
+    }).mount('#app')
+
+    /*
+    ★ 09 新增：
+
+      v-model="变量"                →  双向绑定，表单和 data 自动同步
+        支持：input / textarea / select / checkbox / radio
+
+      v-on:事件="方法"              →  事件绑定
+        简写 @事件="方法"           →  最常用写法
+        例：@click @keyup.enter @input ...
+
+      双向绑定的本质：
+        v-model = :value + @input 的语法糖
+        用户输入 → @input 触发 → data 更新 → :value 回写到输入框
+    */
+</script>
+
+</body>
+</html>

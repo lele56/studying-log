@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue 入门</title>
+</head>
+<body>
+
+    <!--
+    ★ Vue = 前端框架，核心能力：数据变 → 页面自动变
+      对比原生 JS 的 DOM 操作：
+        原生：先找元素 → 再改内容（两步）
+        Vue：只改数据，页面自动刷新（一步）
+    -->
+
+    <!--
+    挂载点：Vue 接管这个 div 及其内部所有内容
+    id="app" 和 mount('#app') 对应，不能错
+    -->
+    <div id="app">
+        <!-- 插值表达式：{{ }} 里写 JS 变量名，自动显示值 -->
+        <h1>{{ msg }}</h1>
+        <p>{{ count }}</p>
+        <button @click="add">+1</button>
+    </div>
+
+    <!--
+    type="module" 必须写，因为用了 ES Module 的 import
+    -->
+    <script type="module">
+        /*
+        ★ Vue 3 三要素：
+          ① createApp({...})   →  创建 Vue 应用
+          ② data() { return {} } →  声明响应式数据
+          ③ .mount('#app')     →  挂载到页面元素
+        */
+
+        import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+        createApp({
+            // data() 返回的对象里所有属性都是"响应式"的
+            // 数据一变，页面跟着变，不用手动操作 DOM
+            data() {
+                return {
+                    msg: 'Hello Vue！',
+                    count: 0
+                }
+            },
+            // methods 里放函数，用 @click 绑定
+            methods: {
+                add() {
+                    this.count++      // this.xxx 访问 data 里的数据
+                }
+            }
+        }).mount('#app')
+    </script>
+
+</body>
+</html>

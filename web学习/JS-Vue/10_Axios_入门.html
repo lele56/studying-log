@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axios 入门</title>
+    <style>
+        body { margin:0; background:#f5f0eb; font-family:"Microsoft YaHei",sans-serif; }
+        .box { max-width:500px; margin:40px auto; }
+        h1 { text-align:center; color:#5c3d2e; }
+        .card { background:#fff; border:2px solid #d4a574; border-radius:8px; padding:20px; margin-bottom:16px; }
+        h3 { margin:0 0 12px; color:#5c3d2e; }
+        button { padding:8px 20px; border:none; border-radius:4px; cursor:pointer; font-size:14px; background:#3b82f6; color:#fff; }
+        button:hover { background:#2563eb; }
+        .result { margin-top:12px; padding:12px; background:#1e1e1e; color:#d4d4d4; border-radius:4px; font-size:13px; font-family:Consolas,monospace; white-space:pre-wrap; line-height:1.6; max-height:250px; overflow-y:auto; }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h1>Axios 入门 —— 异步请求</h1>
+
+    <!--
+    ★ Axios = 前端发 HTTP 请求的库，页面不刷新就能和服务器通信
+      axios.get(url)          →  获取数据（查）
+      axios.post(url, 数据)   →  提交数据（增）
+    -->
+
+    <!-- GET -->
+    <div class="card">
+        <h3>GET — 从服务器拿数据</h3>
+        <button id="btnGet">获取数据</button>
+        <div class="result" id="r1">点击按钮发起请求...</div>
+    </div>
+
+    <!-- POST -->
+    <div class="card">
+        <h3>POST — 提交数据到服务器</h3>
+        <button id="btnPost">提交数据</button>
+        <div class="result" id="r2">点击按钮发起请求...</div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    let API = 'https://jsonplaceholder.typicode.com/todos';
+
+    // GET
+    document.querySelector('#btnGet').addEventListener('click', function() {
+        document.querySelector('#r1').innerText = '请求中...';
+        axios.get(API)
+            .then(function(res) {
+                let data = res.data.slice(0, 3);     // 只展示前 3 条
+                let text = '状态码：' + res.status + '\n';
+                for (let i = 0; i < data.length; i++) {
+                    text += 'id:' + data[i].id + ' | ' + data[i].title + '\n';
+                }
+                document.querySelector('#r1').innerText = text;
+            })
+            .catch(function(err) {
+                document.querySelector('#r1').innerText = '失败：' + err.message;
+            });
+    });
+
+    // POST
+    document.querySelector('#btnPost').addEventListener('click', function() {
+        document.querySelector('#r2').innerText = '提交中...';
+        axios.post(API, { title:'学习 Axios', completed:false })
+            .then(function(res) {
+                document.querySelector('#r2').innerText =
+                    '状态码：' + res.status + '（201=创建成功）\n'
+                    + '返回数据：\n'
+                    + '  id: ' + res.data.id + '\n'
+                    + '  title: ' + res.data.title;
+            })
+            .catch(function(err) {
+                document.querySelector('#r2').innerText = '失败：' + err.message;
+            });
+    });
+
+    /*
+    ★ 模板：
+      axios.get/post(url, 数据?)
+          .then(res => { 成功，res.data 是后端返回的数据 })
+          .catch(err => { 失败，err.message 是错误原因 })
+
+      和 form 的区别：
+        form  → 页面刷新跳转（传统）
+        axios → 页面不动，异步通信（现代），搭配 Vue 数据驱动
+    */
+</script>
+
+</body>
+</html>
